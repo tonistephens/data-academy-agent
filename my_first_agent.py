@@ -1,14 +1,26 @@
-from pydantic_ai import Agent 
-from pydantic_ai.models.google import GoogleModel, GoogleModelSettings
+import os
+from pydantic_ai import Agent
+from pydantic_ai.models.gemini import GeminiModel
 from pydantic_ai.providers.google import GoogleProvider
+from pydantic_ai.models.google import GoogleModel, GoogleModelSettings
 
-provider = GoogleProvider(api_key='your api key')
-model = GoogleModel('gemini-1.5-flash', provider=provider)
+# Initialize the model
+provider = GoogleProvider(api_key='AIzaSyB8N6cic96yyVx3UAlLt6tvZQTYAjNNlWc')
+model = GoogleModel(model_name='gemini-1.5-flash', provider=provider)
 
-agent = Agent(  
-    model,
-    system_prompt='Be concise, reply with one sentence.',  
-)
+# Create a basic agent
+agent = Agent(model=model)
 
-result = agent.run_sync('Where does "hello world" come from?')  
-print(result.output)
+# Simple conversation function
+async def chat():
+    while True:
+        user_input = input("You: ")
+        if user_input.lower() in ['quit', 'exit']:
+            break
+
+        result = await agent.run(user_input)
+        print(f"Agent: {result.data}")
+
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(chat())
